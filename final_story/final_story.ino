@@ -30,56 +30,70 @@ void setup() {
 }
 
 void loop() {
-  if (ping_count_down <= ping_distance_down || ping_count_down != 0)  {
-    
-    while (ping_count_forward >= ping_distance_forward || ping_count_forward == 0)  {
-      
-      while(analogRead(1) <= analogRead(0) && analogRead(1) <= analogRead(2))  {
+  while(analogRead(1) <= analogRead(0) && analogRead(1) <= analogRead(2))  {
+    while(ping_count_forward >= ping_distance_forward || ping_count_forward == 0)  {
+      while(ping_count_down <= ping_distance_down || ping_count_down != 0)  {
         forwards();
         ping_count_forward = sonar_forward.ping_cm();
         delay(30);
         stop_motors();
         ping_count_down = sonar_down.ping_cm();
       }
-        
-      delay(30);
-      
-      while(analogRead(0) < analogRead(1))  {
-        left_turn(); 
+      if(ping_count_down > ping_distance_down)  {
+        reverse();
+        turn();
+      }
+    }
+    if(ping_count_forward < ping_distance_forward) {
+      stop_motors();
+      turn();
+    }
+  }
+  while(analogRead(0) < analogRead(1))  {
+    while(ping_count_forward >= ping_distance_forward || ping_count_forward == 0)  {
+      while(ping_count_down <= ping_distance_down || ping_count_down != 0)  {
+        left_turn();
         ping_count_forward = sonar_forward.ping_cm();
         delay(30);
         stop_motors();
         ping_count_down = sonar_down.ping_cm();
       }
-      
-      delay(30);
-      while(analogRead(2) < analogRead(1))  {
+      if(ping_count_down > ping_distance_down)  {
+        reverse();
+        turn();
+        ping_count_down = sonar_down.ping_cm();
+      }
+    }
+    while(ping_count_forward < ping_distance_forward) {
+      stop_motors();
+      turn();
+      ping_count_forward = sonar_forward.ping_cm();
+    }
+  }
+  
+  while(analogRead(2) < analogRead(1))  {
+    while(ping_count_forward >= ping_distance_forward || ping_count_forward == 0)  {
+      while(ping_count_down <= ping_distance_down || ping_count_down != 0)  {
         right_turn();
         ping_count_forward = sonar_forward.ping_cm();
         delay(30);
         stop_motors();
         ping_count_down = sonar_down.ping_cm();
-        
       }
-      delay(30);
-    }
-      
-      
-      if(ping_count_forward < ping_distance_forward && ping_count_forward != 0)  {
-        reverse();
-        turn();
-        ping_count_forward = sonar_forward.ping_cm();
-      }
-      
-      
-    }
-  
-  if(ping_count_down > ping_distance_down) {
+      while(ping_count_down > ping_distance_down)  {
         reverse();
         turn();
         ping_count_down = sonar_down.ping_cm();
+      }
+    }
+    while(ping_count_forward < ping_distance_forward) {
+      stop_motors();
+      turn();
+      ping_count_forward = sonar_forward.ping_cm();
+    }
   }
 }
+
 void left_forward() {
   digitalWrite(7, LOW);
   digitalWrite(8, HIGH);
@@ -158,7 +172,7 @@ void default_settings() {
 void reverse() {
   right_reverse();
   left_reverse();
-  delay(1000);
+  delay(500);
   stop_motors;
 }
 
